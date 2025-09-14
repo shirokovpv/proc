@@ -31,11 +31,15 @@
 <pre class="notranslate"><code> v_PID=`cat /proc/20129/stat | awk '{ print $1 }'`</code></pre>
 </div>
 <p>20129 - конкретный PID (надо будет в цикле пройти по всем PID).</p>
-<p><span class="T286Pc" data-processed="true">Команда для вывода всех PID из директории /proc:&nbsp;<code>ls -l /proc | awk '{ print $9 }' | grep -Eo '[0-9]{1,4}'| sort -n | uniq</code><br />Из вывода&nbsp;ls -l&nbsp;отбираем только 9 поле с наименованием и оттуда отбираем только уникальные наименования из цифр.</span></p>
+<p><span class="T286Pc" data-processed="true">Команда для вывода всех PID из директории /proc:&nbsp;<code>ls -l /proc | awk '{ print $9 }' | grep -Eo '[0-9]{1,4}'| sort -n | uniq</code><br />Из вывода&nbsp;ls -l&nbsp;отбираем только 9 поле с наименованием и оттуда отбираем только уникальные наименования из цифр. Частичный вывод:</span></p>
+<p dir="auto">shirokovpv@SPB300:~/proc$ ls -l /proc | awk '{ print $9 }' | grep -Eo '[0-9]{1,4}'| sort -n | uniq<br />0<br />1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />13<br />14</p>
+<p dir="auto">...</p>
+<p dir="auto">5701<br />5711<br />5750<br />5936<br />6297<br />6304<br />6504<br />6715<br />6855<br />6862<br />6902<br />6940<br />6952<br />6955<br />6958<br />6961<br />7031<br />7088<br />7231<br />7310<br />7500<br />7609<br />shirokovpv@SPB300:~/proc$</p>
+<p dir="auto">&nbsp;</p>
 <p>Поле&nbsp;<strong>TTY</strong>&nbsp;можно найти, используя команду&nbsp;<code>cat /proc/20129/stat | awk '{ print $7 }'</code></p>
-<img width="681" height="84" alt="image" <p>&nbsp;</p>src="https://github.com/user-attachments/assets/c76d22de-7c1f-490a-ac0b-d21645e1a0bb" />
+<img width="681" height="76" alt="image" src="https://github.com/user-attachments/assets/7ba4a767-022b-4fb2-b7e0-139bf5d67f45" />
 <p>&nbsp;</p>
-<p>Однако, здесь TTY отображается в виде числового идентификатора, который затем нужно будет преобразовать, например, с помощью функции&nbsp;<code class="o8j0Mc">tty_name()</code>. Это в программах. В нашем случае проще использовать команду&nbsp;<code class="o8j0Mc">ps -p &lt;PID&gt; -o tty</code>&nbsp;для получения имени TTY напрямую.<span class="" data-wiz-rootname="ohfaMd"><span class="vKEkVd" data-animation-atomic="">&nbsp;Будем использовать команду&nbsp;&nbsp;<code class="o8j0Mc">ps -p &lt;PID&gt; -o tty</code>. Можно протестировать:</span></span></p>
+<p>Однако, здесь TTY отображается в виде числового идентификатора, который затем нужно будет преобразовать, например, с помощью функции&nbsp;<code class="o8j0Mc">tty_name()</code>. Это в программах. В нашем случае проще использовать команду&nbsp;<code class="o8j0Mc">ps -p &lt;PID&gt; -o tty</code>&nbsp;для получения имени TTY напрямую. Мы же знаем PID.<span class="" data-wiz-rootname="ohfaMd"><span class="vKEkVd" data-animation-atomic="">&nbsp;Будем использовать команду&nbsp;&nbsp;<code class="o8j0Mc">ps -p &lt;PID&gt; -o tty</code>. Можно протестировать:</span></span></p>
 <img width="432" height="183" alt="image" src="https://github.com/user-attachments/assets/96803b7f-54fe-43ce-9645-7dc16c400608" />
 <p>&nbsp;</p>
 <p>Запишем значение в переменную v_TTY, строка будет такой:</p>
