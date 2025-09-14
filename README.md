@@ -57,5 +57,20 @@
 </div>
 <p dir="auto">&nbsp;</p>
 <p dir="auto">Для поля&nbsp;<strong>TIME</strong>&nbsp;нужно сложить поля&nbsp;<strong>UTIME</strong>&nbsp;(Количество времени, которые данный процесс провел в режиме пользователя) и&nbsp;<strong>STIME</strong>&nbsp;(Количество времени, которые данный процесс провел в режиме ядра) и поделить их на значение переменной ядра&nbsp;<strong>CLK_TCK</strong>. Переменную <strong>CLK_TCK</strong> можно узнать командой&nbsp;<code>getconf CLK_TCK</code>. Запишем результат в переменную v_TIME.</p>
+<pre class="notranslate"><code>v_UTIME=`cat /proc/20129/stat | awk '{ print $14 }'`
+v_STIME=`cat /proc/20129/stat | awk '{ print $15 }'`
+v_CLKTCK=`getconf CLK_TCK`
+v_FULLTIME=$((v_UTIME+v_STIME))
+v_CPUTIME=$((v_FULLTIME/v_CLKTCK))
+v_TIME=`date -u -d @${v_CPUTIME} +"%T"`</code></pre>
 <p dir="auto">&nbsp;</p>
-
+<p dir="auto">Поле&nbsp;<strong>COMMAND</strong>&nbsp;можно узнать командой&nbsp;<code>cat /proc/20129/cmdline | strings -n 1 | tr '\n' ' '</code>&nbsp;Вывод:</p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto">&nbsp;</div>
+<img width="807" height="52" alt="image" src="https://github.com/user-attachments/assets/4c9a1b65-4149-4b7a-860d-a33f0aa8fd69" />
+<p>&nbsp;</p>
+<p dir="auto">В некоторых случаях поле может быть пустым, тогда возьмем команду из файла /proc/5184/stat (поле 2)</p>
+<p dir="auto">Запишем в переменную v_COMMAND</p>
+<pre class="notranslate"><code>v_COMMAND=`cat /proc/20129/cmdline | strings -n 1 | tr '\n' ' '`
+   if [[ -z $v_COMMAND]]; then v_COMMAND=`cat /proc/20129/stat | awk '{ print $2 }'</code></pre>
+<p dir="auto">Итоговый скрипт:</p>
+<pre class="notranslate">#!/bin/bash<br />echo "PID TTY STAT TIME COMMAND" # выведем заголовок<br />for ITEM in `ls -l /proc | awk '{ print $9 }' | grep -Eo '[0-9]{1,4}'| sort -n | uniq`<br />do<br />if [ -d /proc/$ITEM/ ]; then # дополнительное условие проверки существования процесса<br /> v_PID=`cat /proc/$ITEM/stat | awk '{ print $1 }'`<br /> v_TTY=`ps -p $ITEM -o tty`<br /> v_STAT=`cat /proc/$ITEM/stat | awk '{ print $3 }'`<br /> v_UTIME=`cat /proc/$ITEM/stat | awk '{ print $14 }'`<br /> v_STIME=`cat /proc/$ITEM/stat | awk '{ print $15 }'`<br /> v_CLKTCK=`getconf CLK_TCK`<br /> v_FULLTIME=$((v_UTIME+v_STIME))<br /> v_CPUTIME=$((v_FULLTIME/v_CLKTCK))<br /> v_TIME=`date -u -d @${v_CPUTIME} +"%T"`<br /><br /> v_COMMAND=`cat /proc/$ITEM/cmdline | strings -n 1 | tr '\n' ' '`<br /> if [[ -z $v_COMMAND ]]; then v_COMMAND=`cat /proc/$ITEM/stat | awk '{ print $2 }'`; fi<br /><br /> echo "$v_PID ${v_TTY:3} $v_STAT $v_TIME $v_COMMAND"<br />fi<br />done</pre>
