@@ -47,10 +47,15 @@
 <p>Первые 3 символа нам не нужны, их можно будет обрезать:</p>
 <img width="432" height="185" alt="image" src="https://github.com/user-attachments/assets/81819dc7-4d36-4d5c-beca-111e515cd2b6" />
 <p>&nbsp;</p>
-<p>Опять же, тут конкретный PID, надо использовать цикл.</p>
 <p dir="auto">Для поля&nbsp;<strong>STAT</strong>&nbsp;используем команду&nbsp;<code>cat /proc/20129/stat | awk '{ print $3 }'</code><br />Вывод:</p>
 <div class="snippet-clipboard-content notranslate position-relative overflow-auto">&nbsp;</div>
 <img width="681" height="76" alt="image" src="https://github.com/user-attachments/assets/dadbb6fb-f547-47c5-adb4-fcf945d94e56" />
 <p>&nbsp;</p>
-
+<p dir="auto">Запишем в переменную v_STAT:</p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto">
+<code>v_STAT=`cat /proc/20129/stat | awk '{ print $3 }'`</code>
+</div>
+<p dir="auto">&nbsp;</p>
+<p dir="auto">Для поля&nbsp;<strong>TIME</strong>&nbsp;нужно сложить поля&nbsp;<strong>UTIME</strong>&nbsp;(Количество времени, которые данный процесс провел в режиме пользователя) и&nbsp;<strong>STIME</strong>&nbsp;(Количество времени, которые данный процесс провел в режиме ядра) и поделить их на значение переменной ядра&nbsp;<strong>CLK_TCK</strong>. Переменную <strong>CLK_TCK</strong> можно узнать командой&nbsp;<code>getconf CLK_TCK</code>. Запишем результат в переменную v_TIME.</p>
+<p dir="auto">&nbsp;</p>
 
